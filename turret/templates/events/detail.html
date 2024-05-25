@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentry Event Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background-color: #4a4a4a;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .header .title {
+            margin-left: 15px;
+            font-size: 1.5em;
+        }
+        .content {
+            display: flex;
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .content .main-content {
+            flex: 3;
+            margin-right: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .content .sidebar {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .event-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .event-header .title {
+            font-size: 1.2em;
+        }
+        .event-header .actions {
+            display: flex;
+            align-items: center;
+        }
+        .event-header .actions button {
+            margin-left: 10px;
+        }
+        .event-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .event-meta .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #4a4a4a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 10px;
+        }
+        .event-meta .details {
+            display: flex;
+            flex-direction: column;
+        }
+        .tags, .exception, .suggested-owners {
+            margin-bottom: 15px;
+        }
+        .tags .tag {
+            background-color: #ddd;
+            border-radius: 3px;
+            padding: 5px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .exception pre {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .stats, .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .stats .item, .tags-list .item {
+            flex: 1 1 50%;
+        }
+        .tags-list .item {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span class="title">DoesNotExist /remote/stripe/webhook</span>
+    </div>
+    <div class="content">
+        <div class="main-content">
+            <div class="event-header">
+                <div class="title">Invoice matching query does not exist.</div>
+                <div class="actions">
+                    <button>Ignore</button>
+                    <button>...</button>
+                </div>
+            </div>
+            <div class="event-meta">
+                <div class="avatar">M</div>
+                <div class="details">
+                    <div>eric@sentry.io</div>
+                    <div>Chrome · Version 60.0.3112</div>
+                    <div>Mac OS X · Version 10.12.4</div>
+                </div>
+            </div>
+            <div class="tags">
+                <div class="tag">environment: prod</div>
+                <div class="tag">level: error</div>
+                <div class="tag">release: e5174b...1d63f9b5</div>
+                <div class="tag">server_name: app-5947</div>
+                <div class="tag">user: ip-208.72.138.58</div>
+            </div>
+            <div class="exception">
+                <h3>Exception</h3>
+                <p>DoesNotExist</p>
+                <p>Invoice matching query does not exist.</p>
+                <pre>
+remote: stripe/endpoints/webhook.py in call_at_line 143
+--------------------------------------------------------
+138. if author.name = commit['author']['name']:
+139.    update_kwargs['name'] = commit['author']['name']
+140. external_id = get_external_id(commit['author']['username'])
+141. if author.external_id != external_id and not is_anonymous_email(author.email):
+142.    update_kwargs['external_id'] = external_id
+143. if update_kwargs:
+144.    self.update(**update_kwargs)
+--------------------------------------------------------
+author: <CommitAuthor at 0x7e10a3b08a10>
+                </pre>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="suggested-owners">
+                <h3>Suggested Owners</h3>
+                <div class="tags-list">
+                    <div class="item">eric</div>
+                    <div class="item">lynley</div>
+                </div>
+            </div>
+            <div class="stats">
+                <div class="item">
+                    <h4>ASSIGNED</h4>
+                    <p>187</p>
+                </div>
+                <div class="item">
+                    <h4>USERS</h4>
+                    <p>5</p>
+                </div>
+                <div class="item">
+                    <h4>LAST 24 HOURS</h4>
+                    <p>21 days ago</p>
+                </div>
+                <div class="item">
+                    <h4>FIRST SEEN</h4>
+                    <p>April 26, 2017</p>
+                </div>
+                <div class="item">
+                    <h4>RELEASE</h4>
+                    <p>712a465c9f0b60d</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
