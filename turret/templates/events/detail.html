@@ -111,83 +111,80 @@
 </head>
 <body>
     <div class="header">
-        <span class="title">DoesNotExist /remote/stripe/webhook</span>
+        <span class="title">{{ event.event.message }}</span>
     </div>
     <div class="content">
         <div class="main-content">
             <div class="event-header">
-                <div class="title">Invoice matching query does not exist.</div>
+                <div class="title">{{ event.event.exception.values[0].type if event.event.exception else event.event.type.upper() }}</div>
                 <div class="actions">
                     <button>Ignore</button>
                     <button>...</button>
                 </div>
             </div>
             <div class="event-meta">
-                <div class="avatar">M</div>
+                <div class="avatar">E</div>
                 <div class="details">
-                    <div>eric@sentry.io</div>
-                    <div>Chrome · Version 60.0.3112</div>
-                    <div>Mac OS X · Version 10.12.4</div>
+                    <div>User: {{ event.event.user.id if event.event.user else "N/A" }}</div>
+                    <div>Environment: {{ event.event.environment }}</div>
+                    <div>Release: {{ event.event.release }}</div>
+                    <div>Timestamp: {{ event.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
                 </div>
             </div>
-            <div class="tags">
-                <div class="tag">environment: prod</div>
-                <div class="tag">level: error</div>
-                <div class="tag">release: e5174b...1d63f9b5</div>
-                <div class="tag">server_name: app-5947</div>
-                <div class="tag">user: ip-208.72.138.58</div>
-            </div>
+
             <div class="exception">
                 <h3>Exception</h3>
-                <p>DoesNotExist</p>
-                <p>Invoice matching query does not exist.</p>
-                <pre>
-remote: stripe/endpoints/webhook.py in call_at_line 143
---------------------------------------------------------
-138. if author.name = commit['author']['name']:
-139.    update_kwargs['name'] = commit['author']['name']
-140. external_id = get_external_id(commit['author']['username'])
-141. if author.external_id != external_id and not is_anonymous_email(author.email):
-142.    update_kwargs['external_id'] = external_id
-143. if update_kwargs:
-144.    self.update(**update_kwargs)
---------------------------------------------------------
-author: <CommitAuthor at 0x7e10a3b08a10>
-                </pre>
+                <p>{{ event.event.exception.values[0].type if event.event.exception else "No Exception" }}</p>
+                <pre>{{ event.event.exception.values[0].value if event.event.exception else "" }}</pre>
             </div>
+            <div>
+              <h3>Stacktrace</h3>
+              <pre>
+                {% if event.event.exception.values[0].stacktrace %}
+                  {% for frame in event.event.exception.values[0].stacktrace.frames %}
+                    {{frame.filename}}:{{frame.lineno}} in {{frame.function}}
+                  {% endfor %}
+                {% else %}
+                No Stacktrace
+                {% endif %}
+              </pre>
+            </div>
+
+            {% if event.event.breadcrumbs %}
+              <div>
+                <h3>Breadcrumbs</h3>
+                <ul>
+                {% for crumb in event.event.breadcrumbs.values %}
+                  <li>
+                    <strong>{{ crumb.type }}: </strong>{{ crumb.message }}
+                    ({{ crumb.timestamp.strftime('%Y-%m-%d %H:%M:%S') }})
+                  </li>
+                {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
         </div>
         <div class="sidebar">
             <div class="suggested-owners">
-                <h3>Suggested Owners</h3>
+                <h3>Tags</h3>
                 <div class="tags-list">
-                    <div class="item">eric</div>
-                    <div class="item">lynley</div>
+                    {% for tag, value in event.event.tags.items() %}
+                        <div class="item">{{ tag }}: {{ value }}</div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="stats">
                 <div class="item">
-                    <h4>ASSIGNED</h4>
-                    <p>187</p>
+                    <h4>Event ID</h4>
+                    <p>{{ event.event_id }}</p>
                 </div>
                 <div class="item">
-                    <h4>USERS</h4>
-                    <p>5</p>
+                    <h4>Project ID</h4>
+                    <p>{{ event.project_id }}</p>
                 </div>
-                <div class="item">
-                    <h4>LAST 24 HOURS</h4>
-                    <p>21 days ago</p>
                 </div>
-                <div class="item">
-                    <h4>FIRST SEEN</h4>
-                    <p>April 26, 2017</p>
-                </div>
-                <div class="item">
-                    <h4>RELEASE</h4>
-                    <p>712a465c9f0b60d</p>
-                </div>
-            </div>
         </div>
     </div>
 </body>
 </html>
-
