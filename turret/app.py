@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import datetime
 import json
@@ -7,8 +8,10 @@ from typing import AsyncGenerator, Any, Optional
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Path, Query
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, NoResultFound
+from sse_starlette import EventSourceResponse
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
@@ -84,6 +87,21 @@ async def store_event(
         raise HTTPException(status_code=400, detail="Event ID already exists")
 
 
+@api_router.get("/events/stream")
+async def stream_events(session: AsyncSession = Depends(get_db)):
+    async def event_generator():
+        while True:
+            stmt = select(TurretEvent).order_by(TurretEvent.id.desc()).limit(10)
+            result = await session.execute(stmt)
+            new_events = result.scalars().all()
+
+            for event in new_events:
+                yield {"data": event}
+                await asyncio.sleep(1)
+
+    return EventSourceResponse(event_generator())
+
+
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_router)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -108,13 +126,13 @@ async def events_list(
         page_size: int = Query(10, ge=1),
         session: AsyncSession = Depends(get_db),
 ):
-    query = session.query(TurretEvent)
+    stmt = select(TurretEvent)
+    result = await session.execute(stmt)
+    events = result.scalars().all()
 
     # Add filtering conditions based on query parameters
 
     # Add pagination logic
-
-    events = query.all()  # Replace with paginated query
 
     return templates.TemplateResponse(
         request=request, name="events/list.html", context={"events": events}

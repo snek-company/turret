@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sentry Backend Issues</title>
+    <script src="https://unpkg.com/htmx.org@1.9.5"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,12 +12,14 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             display: flex;
             flex-direction: column;
             width: 100%;
             height: 100vh;
         }
+
         .header {
             background-color: #4a4a4a;
             color: white;
@@ -24,20 +27,24 @@
             display: flex;
             align-items: center;
         }
+
         .header .title {
             margin-left: 15px;
             font-size: 1.5em;
         }
+
         .main {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
         }
+
         .issue-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
+
         .issue-list li {
             background-color: white;
             margin-bottom: 10px;
@@ -47,10 +54,12 @@
             align-items: center;
             justify-content: space-between;
         }
+
         .issue-list li .details {
             display: flex;
             align-items: center;
         }
+
         .issue-list li .details .icon {
             width: 30px;
             height: 30px;
@@ -62,27 +71,33 @@
             color: white;
             margin-right: 10px;
         }
+
         .issue-list li .details .info {
             display: flex;
             flex-direction: column;
         }
+
         .issue-list li .details .info .message {
             font-size: 1em;
             margin: 0;
         }
+
         .issue-list li .details .info .sub-info {
             font-size: 0.8em;
             color: #666;
         }
+
         .issue-list li .stats {
             text-align: right;
         }
+
         .issue-list li .stats .graph {
             width: 100px;
             height: 20px;
             background-color: #ddd;
             margin-bottom: 5px;
         }
+
         .issue-list li .stats .numbers {
             font-size: 0.8em;
             color: #333;
@@ -90,85 +105,20 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <span class="title">Sentry Backend</span>
-        </div>
+<div class="container">
+    <div class="header">
+        <span class="title">Sentry Backend</span>
+    </div>
+    <div hx-ext="sse" hx-sse="connect:/api/events/stream">
         <div class="main">
-            <ul class="issue-list">
-                <li>
-                    <div class="details">
-                        <div class="icon">E</div>
-                        <div class="info">
-                            <p class="message">HTTPError sentry.tasks.post_process.post_process_group</p>
-                            <p class="sub-info">400 Client Error: BAD REQUEST for url: https://api.url.com/2010-04...</p>
-                            <p class="sub-info">9 minutes ago · a year old · sentry.safe</p>
-                        </div>
-                    </div>
-                    <div class="stats">
-                        <div class="graph"></div>
-                        <div class="numbers">8.8k · 413</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="details">
-                        <div class="icon">E</div>
-                        <div class="info">
-                            <p class="message">DoesNotExist api/hooks/release/[plugin_id]/[project_id]/[signature]/</p>
-                            <p class="sub-info">Project matching query does not exist.</p>
-                            <p class="sub-info">11 minutes ago · a year old</p>
-                        </div>
-                    </div>
-                    <div class="stats">
-                        <div class="graph"></div>
-                        <div class="numbers">2.7k · 142</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="details">
-                        <div class="icon">E</div>
-                        <div class="info">
-                            <p class="message">DoesNotExist salesforce.sync_contact</p>
-                            <p class="sub-info">User matching query does not exist.</p>
-                            <p class="sub-info">14 minutes ago · 3 months old</p>
-                        </div>
-                    </div>
-                    <div class="stats">
-                        <div class="graph"></div>
-                        <div class="numbers">1.2k · 286</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="details">
-                        <div class="icon">E</div>
-                        <div class="info">
-                            <p class="message">NoReverseMatch 500.html</p>
-                            <p class="sub-info">Reverse for 'welcome' with arguments '()' and keyword arguments '{}' not...</p>
-                            <p class="sub-info">18 minutes ago · 2 months old</p>
-                        </div>
-                    </div>
-                    <div class="stats">
-                        <div class="graph"></div>
-                        <div class="numbers">740 · 173</div>
-                    </div>
-                </li>
-                <li>
-                    <div class="details">
-                        <div class="icon">E</div>
-                        <div class="info">
-                            <p class="message">ConnectionError sentry.tasks.post_process.post_process_group</p>
-                            <p class="sub-info">Error 110 connecting to 10.155.255.25:6379. Connection timed out.</p>
-                            <p class="sub-info">34 minutes ago · 13 days old · sentry.safe</p>
-                        </div>
-                    </div>
-                    <div class="stats">
-                        <div class="graph"></div>
-                        <div class="numbers">24 · 0</div>
-                    </div>
-                </li>
+            <ul id="issue-list" class="issue-list"
+                hx-get="/api/1/store/"
+                hx-trigger="load"
+                hx-swap="outerHTML">
             </ul>
         </div>
     </div>
+</div>
 </body>
 </html>
 

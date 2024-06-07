@@ -7,26 +7,12 @@ import sqlalchemy
 from sqlalchemy import String, MetaData, JSON
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncAttrs, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
-from pydantic import BaseModel, Field, validator, field_validator  # Import Pydantic for data validation
 
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite+aiosqlite://")  # Default to SQLite if not set
 
 # Configure database engine with connection pooling
-async_engine = create_async_engine(DATABASE_URL, echo=False, pool_size=5, max_overflow=10)
+async_engine = create_async_engine(DATABASE_URL, echo=False)
 async_session = async_sessionmaker(async_engine, expire_on_commit=False)
-
-
-class BasePydanticModel(BaseModel):
-    class Config:
-        orm_mode = True
-
-
-class TurretEventPydantic(BasePydanticModel):
-    event_id: str = Field(..., min_length=1, max_length=255)
-    project_id: int
-    timestamp: datetime.datetime
-    searchable_strings: str
-    event: dict
 
 
 class BaseModel(AsyncAttrs, DeclarativeBase):
