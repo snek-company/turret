@@ -2,3 +2,4 @@ aiosqlite
 fastapi
 SQLAlchemy
 uvicorn
+sentry-sdk

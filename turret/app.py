@@ -10,7 +10,7 @@ from starlette.responses import HTMLResponse, Response
 from starlette.templating import Jinja2Templates
 
 from turret.db import init_models, get_db, TurretEvent
-from turret._types import Event
+from turret.types import Event
 
 
 templates = Jinja2Templates(directory="templates")
