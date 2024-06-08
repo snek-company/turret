@@ -1,6 +1,7 @@
 import os
 import datetime
 import logging
+import sqlite3
 from typing import Optional, List, AsyncGenerator, Any
 
 import aiosqlite
@@ -9,7 +10,8 @@ from sqlalchemy import String, MetaData, JSON
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncAttrs, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite+aiosqlite:///turret.db")
+DB_NAME = "turret.db"
+DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite+aiosqlite:///{DB_NAME}")
 
 # Configure database engine with connection pooling
 async_engine = create_async_engine(DATABASE_URL, echo=False)
@@ -43,10 +45,14 @@ async def get_db() -> AsyncGenerator[AsyncSession, Any]:
 
 
 async def init_models() -> None:
-    # Create the database file if it doesn't exist
-    async with aiosqlite.connect(DATABASE_URL.replace("sqlite+aiosqlite://", "sqlite://")) as conn:
-        pass
-
-    # Then create the tables within the newly created database
+    conn = None
+    try:
+        conn = sqlite3.connect(DB_NAME)
+    except sqlite3.Error as e:
+        print(e)
+    finally:
+        if conn:
+            conn.close()
+            
     async with async_engine.begin() as conn:
         await conn.run_sync(BaseModel.metadata.create_all)

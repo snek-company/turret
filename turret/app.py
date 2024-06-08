@@ -38,7 +38,6 @@ api_router = APIRouter(
 )
 
 
-# Dependency for event retrieval
 async def get_event(event_id: str, session: AsyncSession = Depends(get_db)) -> TurretEvent:
     try:
         return await session.get(TurretEvent, event_id)

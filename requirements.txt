@@ -3,4 +3,4 @@ fastapi
 SQLAlchemy
 uvicorn
 sentry-sdk
-sse_starlette
+sse-starlette
